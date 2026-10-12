@@ -1,0 +1,5 @@
+dependencies:
+  idf: ">=5.5.0"
+  # OSPTEK AM213 LVGL9 demo selects 2.0.*; pin the patch version for reproducible builds.
+  espressif/esp_lcd_co5300:
+    version: "2.0.3"

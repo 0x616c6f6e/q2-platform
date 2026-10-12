@@ -1,0 +1,86 @@
+menu "Q2 standalone panel selection"
+    choice Q2_PANEL
+        prompt "AMOLED module (standalone builds only)"
+        default Q2_PANEL_AM178
+        help
+            Product builds select display.panel in the root JSON configuration instead.
+        config Q2_PANEL_AM178
+            bool "AM178 / 368x448 / CHSC6417"
+        config Q2_PANEL_AM213
+            bool "AM213 / 410x502 / CST820"
+    endchoice
+endmenu
+
+menu "Q2 AMOLED display diagnosis"
+    choice Q2_AM178_BOOT_MODE
+        prompt "Startup mode"
+        default Q2_AM178_LUA_DEMO
+        config Q2_AM178_LUA_DEMO
+            bool "Lua display demo (normal default)"
+        config Q2_AM178_AREA_TEST
+            bool "Black-background area test (A0/FF, constant brightness)"
+            help
+                Run 42 centered rectangle patterns at increasing area ratios.
+                Each color holds for 3 seconds, preceded by 1 second of black.
+                No Kernel, Lua, LVGL or touch runs. End on a full A0 blue frame.
+        config Q2_AM178_BLUE_TEST
+            bool "Pixel data-pattern diagnostic"
+            help
+                Test palette and clock groups in am178_blue_pattern.c/am178_blue_test.h.
+                Reset before each case. No Kernel/Lua/LVGL/touch. Reference 2 seconds,
+                color 4 seconds, A0 blue recovery without reset 2 seconds.
+                Logs describe the actual background, transport and clock.
+        config Q2_AM178_DIRECT_RGB
+            bool "Direct C full-screen A0 RGB cycle"
+            help
+                Bypass Kernel/Lua/LVGL/touch and hold each color for two seconds.
+    endchoice
+    config Q2_AM178_SINGLE_TRANSACTION
+        bool "Send CO5300 header and payload in one SPI hardware transaction"
+        default y if Q2_AM178_BLUE_TEST
+        default n
+        help
+            Alternative to ESP LCD split header/data transfers. Keeps panel initialization,
+            pixel format, pins and colors unchanged. Uses hardware cmd8/addr24/QIO data;
+            DMA remains enabled. Disable to compare the previous transport.
+    config Q2_AM178_BLUE_RGB888
+        bool "Use QSPI RGB888 for the blue diagnostic"
+        depends on Q2_AM178_BLUE_TEST
+        default y
+        help
+            Use COLMOD 0x77, 24-bit driver and R/G/B byte packing for the same blue cases.
+            Disable for the previous RGB565 baseline. Brightness, init sequence, geometry,
+            clocks and hold times are unchanged. Other startup modes retain RGB565.
+endmenu
+
+menu "Q2 AMOLED standalone display orientation"
+    choice Q2_AM178_ORIENTATION
+        prompt "Device/view clockwise rotation (standalone builds only)"
+        default Q2_AM178_ROTATE_0
+        help
+            Root product builds use display.rotation in q2.esp32s3.json instead.
+            Software rotation maps both pixels and touch without panel swap_xy/mirror.
+        config Q2_AM178_ROTATE_0
+            bool "0 degrees (native portrait)"
+        config Q2_AM178_ROTATE_90
+            bool "90 degrees (landscape)"
+        config Q2_AM178_ROTATE_180
+            bool "180 degrees (native portrait)"
+        config Q2_AM178_ROTATE_270
+            bool "270 degrees (landscape)"
+    endchoice
+    config Q2_AM178_ROTATION
+        int
+        default 90 if Q2_AM178_ROTATE_90
+        default 180 if Q2_AM178_ROTATE_180
+        default 270 if Q2_AM178_ROTATE_270
+        default 0
+endmenu
+
+config Q2_AM178_INITIAL_BRIGHTNESS
+    int "AMOLED initial brightness percent (standalone builds only)"
+    range 0 100
+    default 25
+    help
+        Root product builds exclusively use display.brightness in q2.esp32s3.json.
+        Brightness is written once by the board initialization table. Runtime control remains available.

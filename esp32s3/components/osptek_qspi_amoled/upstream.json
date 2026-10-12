@@ -1,0 +1,22 @@
+{
+  "repository": "https://github.com/osptek/amoled-1.78-368x448-qspi-co5300",
+  "revision": "ffe29d6746f1529e3b03041fd6887e1c653f4c33",
+  "local_reference": "/home/alon/github/amoled-1.78-368x448-qspi-co5300/versions/AM178Q368448LK/examples/esp32s3-amoled-1.78-368x448-qspi-co5300-bringup",
+  "license": "Apache-2.0",
+  "changes": "Q2 CMake wrapper; draw_bitmap returns tx_color result. Protocol/init/packing unchanged.",
+  "sha256": {
+    "esp_lcd_qspi_amoled.c": "25a5f25f93425c51c4b6c7fee4c0e1ba665a6847f94b783d5fb83be20627538a",
+    "include/esp_lcd_qspi_amoled.h": "fa35686da9a48a1b3f59fbf7fae10cdb3466ddbb9595726d2a76e7c980f5294c",
+    "license.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  "board_init_header": "../../main/am178_vendor_init.h",
+  "board_init_sha256": "3b8b0ad16c2c1c6332d870a26b2df63617028b6e7f3dc5dd7601d1c9c2c3bfe5",
+  "board_init_original_sha256": "c4420274fef5b372e8767049d7df4612ef6f247d4e18a27f5d7177d716a8454d",
+  "board_init_changes": "User-selected 0x63=0x80 retained; 0x51 derives from project display.brightness (standalone Kconfig fallback). No post-init brightness override. Remaining command order, payloads and delays retain local reference. COLMOD now follows the selected diagnostic pixel format (RGB565 0x55 / RGB888 0x77); vendor draw_bitmap propagates tx_color errors.",
+  "local_lcd_init_sha256": "5b6f6907e1a09fa665bee427f5951718e68796b94556d144515a72c64c9bb6fc",
+  "upstream_sha256": {
+    "esp_lcd_qspi_amoled.c": "eb3a3d7652b65e26eb73d65e25d3f0845a4460108e2c40bf448376b75ba72cd4",
+    "include/esp_lcd_qspi_amoled.h": "fa35686da9a48a1b3f59fbf7fae10cdb3466ddbb9595726d2a76e7c980f5294c",
+    "license.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  }
+}

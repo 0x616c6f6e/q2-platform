@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q2 · Hardware Lab</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;background:#141617;color:#ebeeeb}
+*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:42px 28px}
+header,.row{display:flex;align-items:center;justify-content:space-between;gap:16px}header{margin-bottom:28px}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:#bf9e83}h1{font-size:36px;font-weight:550;margin:10px 0}
+h2{font-size:18px;font-weight:550;margin:0}p{font-size:14px;line-height:1.8;color:#9a9f9c;margin:12px 0}
+.pill{border:1px solid #42483e;border-radius:24px;padding:9px 13px;font-size:12px;color:#b9caae;white-space:nowrap}
+.layout{display:grid;grid-template-columns:minmax(340px,1.2fr) minmax(300px,.8fr);gap:22px}
+.card{background:#1c1f20;border:1px solid #323637;border-radius:22px;padding:25px;margin-bottom:22px}
+.count{color:#a6ada9;font:12px Consolas,monospace}.intro{font-size:13px}.dial-wrap{padding:12px 6px 20px}
+.dial{position:relative;width:min(100%,360px);aspect-ratio:1;margin:auto;border:3px solid #b96e37;border-radius:50%;background:conic-gradient(from 45deg,#202425 0 24.8%,#3c4040 24.8% 25.2%,#202425 25.2% 49.8%,#3c4040 49.8% 50.2%,#202425 50.2% 74.8%,#3c4040 74.8% 75.2%,#202425 75.2% 99.8%,#3c4040 99.8%);box-shadow:0 18px 35px #0005,inset 0 0 0 7px #151718}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.key{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:0;background:transparent;border-radius:24px;min-width:68px;min-height:68px;padding:8px;transition:background .12s,color .12s}
+.dial .key{position:absolute;width:25%;height:25%;transform:translate(-50%,-50%)}
+.key .symbol{font-size:27px;line-height:1;font-family:"Segoe UI Symbol",sans-serif}.key .name{font-size:10px;letter-spacing:.08em}.key .recent{font-size:10px;color:#949d97}
+.key:hover{background:#ffffff0b}.key:focus-visible{outline:2px solid #e49d68;outline-offset:3px}
+.key.pressed{background:#d79258;color:#171b18}.key.pressed .recent{color:#37291d}
+.key:disabled{cursor:default;opacity:.45}.key.center{width:30%;height:30%;border-radius:50%;border:1px solid #555950;background:radial-gradient(circle at 40% 20%,#393e3b,#242a27);box-shadow:0 5px 14px #0008}
+.key.center.pressed{background:#d79258}.extra{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.extra .key{border:1px solid #424741;min-width:100px}
+.latest{border-top:1px solid #333836;padding-top:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px}.latest strong{font-weight:500;color:#ebbd92}
+.timing{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.timing div{border-left:2px solid #705642;padding-left:10px}.timing b{display:block;font:18px Consolas,monospace;margin-bottom:7px;color:#e4c5aa}.timing span{font-size:11px;color:#9ba29c}
+.events{height:198px;overflow:auto;font:12px/1.8 Consolas,"Microsoft YaHei",monospace;margin-top:16px;color:#c4cfc4}.events div{border-bottom:1px solid #333836;padding:6px 0}.events .failed,.error{color:#ffc6a0}.error{min-height:18px;font-size:12px;margin-top:10px}
+.hint,footer{font-size:12px;line-height:1.8;color:#8e9890}.empty{color:#727e74}.shortcut{margin:18px 0 0;text-align:center;font-size:12px;color:#8e9890}
+.device-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.device-grid .card{margin:0;min-width:0}.section-heading{margin:8px 0 20px}.sim-tag{font-size:11px;color:#e4c5aa;letter-spacing:.1em}
+.device-form label{display:block;font-size:12px;color:#b4bdb7;margin-top:16px}.device-form input,.device-form select{display:block;width:100%;font:inherit;font-size:14px;color:#edf2ed;background:#141819;border:1px solid #444c48;border-radius:9px;padding:10px 12px;margin-top:8px;min-height:42px}
+.device-form input:focus,.device-form select:focus{outline:2px solid #d79258;outline-offset:1px}.device-form .check{display:flex;align-items:center;gap:10px;min-height:42px}.check input{width:18px;min-height:18px;height:18px;margin:0;accent-color:#d79258}
+.fields{min-height:194px}.actions{display:flex;gap:8px;margin-top:20px}.action{border:1px solid #575044;border-radius:10px;padding:11px 14px;background:#d79258;color:#161b17;font-size:13px;touch-action:manipulation}.action.secondary{background:transparent;color:#bec7c0;border-color:#424a45}
+.device-form :disabled{opacity:.45;cursor:not-allowed}.applied{font:12px/1.7 Consolas,"Microsoft YaHei",monospace;color:#c1cec3;min-height:42px;margin:15px 0 0;border-top:1px solid #343c36;padding-top:12px;overflow-wrap:anywhere}.device-note{margin:10px 0 24px}.device-form .error{margin-bottom:0}
+@media(max-width:960px){.device-grid{grid-template-columns:1fr}.fields{min-height:0}}
+@media(max-width:760px){main{padding:24px 16px}.layout{grid-template-columns:1fr}header{align-items:flex-start}.card{padding:22px 18px}.dial{max-width:340px}h1{font-size:30px}}
+</style>
+</head>
+<body><main>
+<header><div><div class="eyebrow">Q2 / HARDWARE SIMULATOR</div><h1>Hardware Lab</h1><p>模拟按键与设备状态，直接验证 APP 的响应。</p></div><span id="connection" class="pill">连接中</span></header>
+<div class="layout">
+<section class="card"><div class="row"><h2>圆盘按键 <span class="count">Key Lab</span></h2><span id="key-count" class="count">—</span></div><p class="intro">轻点一次、连续轻点两次，或按住一个按键。</p>
+<div class="dial-wrap"><div id="dial" class="dial" role="group" aria-label="Q2 圆盘按键"></div></div><div id="extra" class="extra"></div>
+<div class="latest"><span>最近识别</span><strong id="latest">等待操作</strong></div><p class="shortcut">鼠标 / 触屏按住 · 聚焦后可使用空格或 Enter</p></section>
+<section><div class="card"><div class="row"><h2>识别记录</h2><span id="reports" class="count">0 events</span></div><div id="events" class="events" role="log" aria-label="识别记录"><span class="empty">识别到的按键动作会显示在这里。</span></div><div id="error" class="error" role="status"></div></div>
+<div class="card"><div class="eyebrow">SOC / INPUT TIMING</div><div class="timing"><div><b id="single-ms">—</b><span>最短有效按下</span></div><div><b id="double-ms">—</b><span>双击间隔</span></div><div><b id="long-ms">—</b><span>长按阈值</span></div></div>
+<p class="hint">单击在双击窗口结束后确认；长按达到阈值即上报一次。移开窗口或取消操作会释放输入。</p><p class="hint">在设备窗口打开 <strong>Key Demo</strong> 查看 APP 响应。时间配置位于 <code>q2/q2.json</code>，修改后重新编译。</p></div>
+<footer>仅限本机 · Kernel 透传识别结果 · 功能由 APP 决定<br>圆盘仅模拟独立按键，不包含滑动手势。</footer></section>
+</div>
+<section aria-labelledby="device-title">
+<div class="row section-heading"><div><h2 id="device-title">设备数据</h2><p class="intro">输入数值后点击应用。状态变化会送达正在订阅的 APP。</p></div><span class="sim-tag">SIMULATED</span></div>
+<p id="device-note" class="hint device-note">等待设备连接…</p>
+<div class="device-grid">
+<form id="battery-form" class="card device-form" data-group="battery">
+<div class="row"><h2>电池</h2><span class="count">BATTERY</span></div>
+<label for="battery-mode">发布状态<select id="battery-mode" name="mode"><option value="value">正常值</option><option value="error">读取失败</option><option value="timeout">数据过期</option></select></label>
+<div class="fields"><label for="battery-percent">电量 · %<input id="battery-percent" name="percent" type="number" min="0" max="100" step="1" value="75" required></label>
+<label for="battery-voltage_mv">电压 · mV<input id="battery-voltage_mv" name="voltage_mv" type="number" min="0" max="20000" step="1" value="3900" required></label>
+<label class="check" for="battery-charging"><input id="battery-charging" name="charging" type="checkbox">正在充电</label></div>
+<div class="actions"><button class="action" type="submit">应用模拟</button><button class="action secondary" type="button" data-reset>停用模拟</button></div>
+<p id="battery-applied" class="applied" aria-live="polite">当前：未模拟</p><p id="battery-error" class="error" role="status"></p>
+</form>
+<form id="wifi-form" class="card device-form" data-group="wifi">
+<div class="row"><h2>Wi-Fi</h2><span class="count">WIFI</span></div>
+<label for="wifi-mode">发布状态<select id="wifi-mode" name="mode"><option value="value">正常值</option><option value="error">读取失败</option><option value="timeout">数据过期</option></select></label>
+<div class="fields"><label class="check" for="wifi-connected"><input id="wifi-connected" name="connected" type="checkbox" checked>已连接</label>
+<label for="wifi-rssi_dbm">信号强度 · dBm<input id="wifi-rssi_dbm" name="rssi_dbm" type="number" min="-127" max="0" step="1" value="-65" required></label><p class="hint">范围 −127～0。断开连接后，APP 读取信号强度会返回不可用。</p></div>
+<div class="actions"><button class="action" type="submit">应用模拟</button><button class="action secondary" type="button" data-reset>停用模拟</button></div>
+<p id="wifi-applied" class="applied" aria-live="polite">当前：未模拟</p><p id="wifi-error" class="error" role="status"></p>
+</form>
+<form id="ble-form" class="card device-form" data-group="ble">
+<div class="row"><h2>低功耗蓝牙</h2><span class="count">BLE</span></div>
+<label for="ble-mode">发布状态<select id="ble-mode" name="mode"><option value="value">正常值</option><option value="error">读取失败</option><option value="timeout">数据过期</option></select></label>
+<div class="fields"><label class="check" for="ble-connected"><input id="ble-connected" name="connected" type="checkbox" checked>已连接</label>
+<label for="ble-rssi_dbm">信号强度 · dBm<input id="ble-rssi_dbm" name="rssi_dbm" type="number" min="-127" max="0" step="1" value="-60" required></label><p class="hint">独立模拟 BLE 连接，不会改变经典蓝牙耳机的连接状态。</p></div>
+<div class="actions"><button class="action" type="submit">应用模拟</button><button class="action secondary" type="button" data-reset>停用模拟</button></div>
+<p id="ble-applied" class="applied" aria-live="polite">当前：未模拟</p><p id="ble-error" class="error" role="status"></p>
+</form>
+</div><p class="hint">这些数据仅用于当前运行的模拟器，不会操作电脑的无线设备或保存到下一次运行。停用后恢复为“设备不支持”。</p>
+</section></main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const labels = ['尚无事件', '单击', '双击', '长按'];
+const slots = {POWER:[50,16,'⏻'], PREV:[16,50,'◀'], NEXT:[84,50,'▶'], BACK:[50,84,'↶'], PLAY:[50,50,'▶Ⅱ']};
+const cards = new Map(), held = new Map();
+let token = '', chain = Promise.resolve(), pending = 0, seen = 0, online = false;
+function paint(name) {
+    const card = cards.get(name);
+    if (!card) return;
+    const down = held.has(name) || card.remote;
+    card.button.classList.toggle('pressed', down);
+    card.button.setAttribute('aria-pressed', String(down));
+}
+// Only edges travel over HTTP. There are no click/double-click/long-press timers in the page.
+function send(path) {
+    if (!online || pending >= 32) return Promise.reject(Error('设备未连接或输入队列已满'));
+    const session = token;
+    pending++;
+    const job = chain.catch(() => {}).then(async () => {
+        if (session !== token) throw Error('设备已重启，请重新按下');
+        const response = await fetch(path, {method:'POST', headers:{'X-Q2-Token':session},
+            signal:AbortSignal.timeout(1500)});
+        const body = await response.json();
+        if (!response.ok || !body.ok) throw Error(body.code || '输入提交失败');
+    });
+    chain = job.catch(e => { $('error').textContent = e.message; }).finally(() => pending--);
+    return job;
+}
+function edge(name, state) {
+    send('/api/key?name=' + encodeURIComponent(name) + '&state=' + state)
+        .catch(e => { $('error').textContent = e.message; });
+}
+function press(name, source) {
+    if (!online || held.has(name)) return;
+    held.set(name, source); paint(name); edge(name, 'down');
+}
+function release(name, source, cancel = false) {
+    if (!held.has(name) || (source !== null && held.get(name) !== source)) return;
+    held.delete(name); paint(name); edge(name, cancel ? 'cancel' : 'up');
+}
+function cancelAll() { for (const name of [...held.keys()]) release(name, null, true); }
+function build(keys) {
+    $('dial').replaceChildren(); $('extra').replaceChildren(); cards.clear();
+    for (const item of keys) {
+        const button = document.createElement('button'); button.type = 'button'; button.className = 'key';
+        button.setAttribute('aria-label', item.name); button.setAttribute('aria-pressed', 'false');
+        const symbol = document.createElement('span'), name = document.createElement('span'), recent = document.createElement('span');
+        symbol.className = 'symbol'; name.className = 'name'; recent.className = 'recent';
+        const slot = slots[item.name]; symbol.textContent = slot ? slot[2] : '◇'; name.textContent = item.name;
+        button.append(symbol, name, recent);
+        if (slot) {
+            button.style.left = slot[0] + '%'; button.style.top = slot[1] + '%';
+            if (item.name === 'PLAY') button.classList.add('center');
+            $('dial').append(button);
+        } else $('extra').append(button);
+        button.addEventListener('pointerdown', e => {
+            if (e.button !== 0 || held.has(item.name)) return;
+            e.preventDefault(); button.focus(); button.setPointerCapture(e.pointerId); press(item.name, e.pointerId);
+        });
+        button.addEventListener('pointerup', e => release(item.name, e.pointerId));
+        for (const type of ['pointercancel', 'lostpointercapture'])
+            button.addEventListener(type, e => release(item.name, e.pointerId, true));
+        button.addEventListener('contextmenu', e => e.preventDefault());
+        button.addEventListener('keydown', e => {
+            if (e.code !== 'Space' && e.code !== 'Enter') return;
+            e.preventDefault(); if (!e.repeat) press(item.name, 'keyboard:' + e.code);
+        });
+        button.addEventListener('keyup', e => {
+            if (e.code !== 'Space' && e.code !== 'Enter') return;
+            e.preventDefault(); release(item.name, 'keyboard:' + e.code);
+        });
+        button.addEventListener('blur', () => {
+            if (String(held.get(item.name)).startsWith('keyboard:')) release(item.name, null, true);
+        });
+        cards.set(item.name, {button, recent, remote:false});
+    }
+}
+function showEvent(event) {
+    if ($('events').querySelector('.empty')) $('events').replaceChildren();
+    const line = document.createElement('div');
+    line.textContent = '#' + event.id + '  ' + event.name + ' · ' + labels[event.action]
+        + (event.result === 0 ? '' : ' · 上报失败 (' + event.result + ')');
+    if (event.result !== 0) line.className = 'failed';
+    $('events').prepend(line);
+    while ($('events').children.length > 30) $('events').lastChild.remove();
+}
+const groups = ['battery', 'wifi', 'ble'];
+let simulationReady = false;
+function enableForm(group) {
+    const form = $(group + '-form');
+    const enabled = online && simulationReady && form.dataset.busy !== 'true';
+    form.querySelector('select').disabled = !enabled;
+    for (const button of form.querySelectorAll('button')) button.disabled = !enabled;
+    for (const input of form.querySelectorAll('input')) input.disabled = !enabled || $(group + '-mode').value !== 'value';
+}
+function simulation(state) {
+    simulationReady = !!state?.enabled;
+    $('device-note').textContent = simulationReady
+        ? '模拟已就绪 · 每组数据独立应用，支持正常值、读取失败和过期状态。'
+        : '当前运行未启用设备数据组件，请在项目配置中开启 components.data 并重新运行。';
+    for (const group of groups) {
+        const form = $(group + '-form'), value = state?.[group];
+        if (value) {
+            if (!form.dataset.initialized) {
+                for (const input of form.querySelectorAll('input')) {
+                    if (input.type === 'checkbox') input.checked = value[input.name];
+                    else input.value = value[input.name];
+                }
+                $(group + '-mode').value = value.mode === 'off' ? 'value' : value.mode;
+                form.dataset.initialized = 'true';
+            }
+            const modes = {off:'未模拟 · 设备不支持', error:'模拟读取失败', timeout:'模拟数据过期'};
+            let summary = modes[value.mode];
+            if (value.mode === 'value') summary = group === 'battery'
+                ? `${value.percent}% · ${value.voltage_mv} mV · ${value.charging ? '充电中' : '未充电'}`
+                : value.connected ? `已连接 · ${value.rssi_dbm} dBm` : '已断开 · RSSI 不可用';
+            $(group + '-applied').textContent = '当前：' + summary;
+        }
+        enableForm(group);
+    }
+}
+async function applySimulation(group, reset = false) {
+    const form = $(group + '-form');
+    if (!reset && !form.reportValidity()) return;
+    const mode = reset ? 'off' : $(group + '-mode').value;
+    const params = new URLSearchParams({group, mode});
+    if (mode === 'value') for (const input of form.querySelectorAll('input')) {
+        params.set(input.name, input.type === 'checkbox' ? (input.checked ? '1' : '0') : String(Number(input.value)));
+    }
+    form.dataset.busy = 'true'; enableForm(group); $(group + '-error').textContent = '';
+    try {
+        await send('/api/device?' + params.toString());
+        $(group + '-error').textContent = reset ? '已停用' : '已应用';
+    } catch (e) { $(group + '-error').textContent = '未应用：' + e.message; }
+    finally { form.dataset.busy = 'false'; enableForm(group); }
+}
+for (const group of groups) {
+    $(group + '-form').addEventListener('submit', e => { e.preventDefault(); applySimulation(group); });
+    $(group + '-form').querySelector('[data-reset]').addEventListener('click', () => applySimulation(group, true));
+    $(group + '-mode').addEventListener('change', () => enableForm(group));
+    enableForm(group);
+}
+async function status() {
+    try {
+        const response = await fetch('/api/state', {signal:AbortSignal.timeout(1500)});
+        if (!response.ok) throw Error('设备状态不可用');
+        const state = await response.json();
+        if (token && token !== state.token) { held.clear(); seen = 0; $('events').replaceChildren();
+            for (const group of groups) delete $(group + '-form').dataset.initialized; }
+        token = state.token; online = true;
+        simulation(state.simulation);
+        $('key-count').textContent = state.keys.length + ' KEYS'; $('reports').textContent = state.reports + ' events';
+        if (cards.size !== state.keys.length || state.keys.some(k => !cards.has(k.name))) build(state.keys);
+        for (const key of state.keys) {
+            const card = cards.get(key.name); card.remote = key.pressed; card.button.disabled = false;
+            card.recent.textContent = labels[key.last_action]; paint(key.name);
+        }
+        for (const event of state.events) if (event.id > seen) { showEvent(event); seen = event.id; }
+        if (state.last_key) $('latest').textContent = state.last_key + ' · ' + labels[state.last_action];
+        $('single-ms').textContent = state.timing.single_min_ms + ' ms';
+        $('double-ms').textContent = state.timing.double_gap_ms + ' ms';
+        $('long-ms').textContent = state.timing.long_press_ms + ' ms';
+        $('connection').textContent = '已连接 · 本机';
+    } catch (e) {
+        online = false; held.clear();
+        for (const group of groups) enableForm(group);
+        for (const [name, card] of cards) { card.remote = false; card.button.disabled = true; paint(name); }
+        $('connection').textContent = '连接已断开'; $('error').textContent = e.message;
+    } finally { setTimeout(status, 200); }
+}
+// A heartbeat keeps held input alive; x86 cancels a lost browser after 2 seconds.
+setInterval(() => { if (held.size && online && pending === 0) send('/api/heartbeat').catch(() => {}); }, 250);
+window.addEventListener('blur', cancelAll);
+window.addEventListener('pagehide', cancelAll);
+document.addEventListener('visibilitychange', () => { if (document.hidden) cancelAll(); });
+window.addEventListener('keydown', e => { if (e.code === 'Escape') cancelAll(); });
+status();
+</script></body></html>

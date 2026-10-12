@@ -1,0 +1,13 @@
+build/
+.tools/
+dist/
+__pycache__/
+*.pyc
+*.log
+esp32s31/sdkconfig
+esp32s31/sdkconfig.old
+esp32s31/managed_components/
+
+esp32s3/sdkconfig
+esp32s3/sdkconfig.old
+esp32s3/managed_components/

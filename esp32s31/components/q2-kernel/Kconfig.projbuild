@@ -1,0 +1,14 @@
+menu "Q2 diagnostic logging"
+    config Q2_ENABLE_LOG
+        bool "Compile Q2 diagnostic logging"
+        default y
+        help
+            Enables the optional Kernel logging backend and Lua system.log capability.
+            ESP-IDF/bootloader logs have separate SDK settings.
+
+    config Q2_LOG_LEVEL
+        int "Q2 default log level (0 off, 1 error, 2 warn, 3 info, 4 debug)"
+        range 0 4
+        default 3
+        depends on Q2_ENABLE_LOG
+endmenu

@@ -1,0 +1,44 @@
+menu "Q2 standalone panel selection"
+    choice Q2_PANEL
+        prompt "AMOLED module (standalone builds only)"
+        default Q2_PANEL_AM178
+        help
+            Product builds select display.panel in the root JSON configuration instead.
+        config Q2_PANEL_AM178
+            bool "AM178 / 368x448 / CHSC6417"
+        config Q2_PANEL_AM213
+            bool "AM213 / 410x502 / CST820"
+    endchoice
+endmenu
+
+menu "Q2 AMOLED standalone display orientation"
+    choice Q2_AM178_ORIENTATION
+        prompt "Device/view clockwise rotation (standalone builds only)"
+        default Q2_AM178_ROTATE_0
+        help
+            Root product builds use display.rotation in q2.esp32s3.json instead.
+            Software rotation maps both pixels and touch without panel swap_xy/mirror.
+        config Q2_AM178_ROTATE_0
+            bool "0 degrees (native portrait)"
+        config Q2_AM178_ROTATE_90
+            bool "90 degrees (landscape)"
+        config Q2_AM178_ROTATE_180
+            bool "180 degrees (native portrait)"
+        config Q2_AM178_ROTATE_270
+            bool "270 degrees (landscape)"
+    endchoice
+    config Q2_AM178_ROTATION
+        int
+        default 90 if Q2_AM178_ROTATE_90
+        default 180 if Q2_AM178_ROTATE_180
+        default 270 if Q2_AM178_ROTATE_270
+        default 0
+endmenu
+
+config Q2_AM178_INITIAL_BRIGHTNESS
+    int "AMOLED initial brightness percent (standalone builds only)"
+    range 0 100
+    default 25
+    help
+        Root product builds exclusively use display.brightness in q2.esp32s3.json.
+        Brightness is written once by the board initialization table. Runtime control remains available.
