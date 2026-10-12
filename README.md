@@ -8,6 +8,7 @@
 | x86 Linux | SDL2 窗口、LVGL、按键/Web 模拟、POSIX 文件 LittleFS、可选 SQLite、libcurl HTTP/HTTPS；无音频 |
 | host | 控制台文本显示、RAM LittleFS、Lua 单 APP、可选内存 SQLite |
 | esp32s3 | [AM178 显示/触摸、LVGL 中文与 Lua 验证入口](esp32s3/README.md)，N16R8 参考配置；其他设备能力未迁移 |
+| esp32 | [经典 ESP32 最小 Kernel/runtime 入口](esp32/README.md)，默认 4 MB Flash/UART0，尚无产品外设 |
 | esp32s31 | ESP-IDF 最小 Kernel/runtime 入口，尚无产品外设 |
 
 产品构建、启动和配置在父级 q2 根目录：`build.ps1`、`run.ps1`、`q2.py`、`q2.json`。见 [产品文档](../README.md)、[接入规范](../docs/platform-development.md)、[配置规则](../docs/configuration.md)。这些父级文档不参与独立 Platform 编译。

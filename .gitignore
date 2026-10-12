@@ -11,3 +11,7 @@ esp32s31/managed_components/
 esp32s3/sdkconfig
 esp32s3/sdkconfig.old
 esp32s3/managed_components/
+
+esp32/sdkconfig
+esp32/sdkconfig.old
+esp32/managed_components/
